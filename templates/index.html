@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>EV Database</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <script type="module" src="{{url_for('static', path='/firebase-login.js')}}"></script>
+        <style>
+            #login-box {
+                margin: 0 auto;
+                margin-top: 100px; 
+                width: 300px; 
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div id="login-box" class="text-center">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input class="form-control" type="email" name="" id="email">
+                </div><br/>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input class="form-control" type="password" name="" id="password">
+                </div><br/>
+                <button id="login" class="btn btn-primary">Login</button>
+            </div>
+            <button id="sign-out" class="btn btn-primary" style="margin-top: 3%;">Sign out</button>
+            <br>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <a href="/add" style="color: white;text-decoration: none;text-align: center;">Add</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <a href="/search-ev" style="color: white;text-decoration: none;text-align: center;">Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <a href="/ev-list" style="color: white;text-decoration: none;text-align: center;">Evs List</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <a href="/compare-ev" style="color: white;text-decoration: none;text-align: center;">Compare EVs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
