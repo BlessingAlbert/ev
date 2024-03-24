@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EV Database | Compare</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            padding-top: 50px;
+        }
+        .compare-box {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .compare-title {
+            border-bottom: 2px solid #343a40;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        .ev-info {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .ev-info p {
+            margin-bottom: 5px;
+        }
+        .ev-info a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .ev-info a:hover {
+            text-decoration: underline;
+        }
+        .max-value {
+            color: green;
+        }
+        .min-value {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="compare-box">
+            <h3 class="compare-title text-center">Compare EVs</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="text-center">Select 1st EV</h4>
+                    <select id="ev1" onchange="displayEVInfo('ev1')">
+                        <option value="">Select</option>
+                    </select>
+                    <div id="ev1Info" class="ev-info"></div>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="text-center">Select 2nd EV</h4>
+                    <select id="ev2" onchange="displayEVInfo('ev2')">
+                        <option value="">Select</option>
+                    </select>
+                    <div id="ev2Info" class="ev-info"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchEVs() {
+            const response = await fetch('/compare-evs');
+            const data = await response.json();
+            return data.evs; 
+        }
+        
+        async function populateDropdowns() {
+            const evs = await fetchEVs();
+            const ev1Dropdown = document.getElementById('ev1');
+            const ev2Dropdown = document.getElementById('ev2');
+    
+            evs.forEach(ev => {
+                const option1 = document.createElement('option');
+                option1.value = ev.id;
+                option1.textContent = ev.name;
+                ev1Dropdown.appendChild(option1);
+    
+                const option2 = document.createElement('option');
+                option2.value = ev.id;
+                option2.textContent = ev.name; 
+                ev2Dropdown.appendChild(option2);
+            });
+        }
+    
+        async function displayEVInfo(dropdownId) {
+            const selectedId = document.getElementById(dropdownId).value;
+            const evs = await fetchEVs();
+            const selectedEV = evs.find(ev => ev.id === selectedId);
+            const infoDiv = document.getElementById(`${dropdownId}Info`);
+    
+            if (selectedEV) {
+                const properties = {
+                    "ID": selectedEV.id,
+                    "Name": `<a href="/ev/${selectedEV.name}">${selectedEV.name}</a>`,
+                    "Manufacturer": selectedEV.manufacturer,
+                    "Year": selectedEV.year,
+                    "Battery Size": selectedEV.battery_size,
+                    "WLTP Range": selectedEV.wltp_range,
+                    "Cost": selectedEV.cost,
+                    "Power kW": selectedEV.power_kw
+                };
+    
+                let html = '';
+    
+                for (const [key, value] of Object.entries(properties)) {
+                    if (!isNaN(value)) {
+                        const numericValues = Object.values(properties).filter(val => !isNaN(val));
+                        if (value === Math.max(...numericValues)) {
+                            html += `<p>${key}: <span class="max-value">${value}</span></p>`;
+                        } else if (value === Math.min(...numericValues)) {
+                            html += `<p>${key}: <span class="min-value">${value}</span></p>`;
+                        } else {
+                            html += `<p>${key}: ${value}</p>`;
+                        }
+                    } else {
+                        html += `<p>${key}: ${value}</p>`;
+                    }
+                }
+    
+                infoDiv.innerHTML = html;
+            } else {
+                infoDiv.innerHTML = "<p>No information available for the selected EV.</p>";
+            }
+        }
+        
+        window.addEventListener('load', () => {
+            populateDropdowns();
+        });
+    </script>
+    
+</body>
+</html>
