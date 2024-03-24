@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EV Database | List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        function deleteEv(evId) {
+            fetch(`/delete/${evId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    console.error('Failed to delete EV');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting EV:', error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h3 class="text-center">EV List</h3>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Manufacturer</th>
+                <th>Year</th>
+                <th>Battery Size (Kwh)</th>
+                <th>WLTP Range (Km)</th>
+                <th>Cost</th>
+                <th>Power (Kw)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for ev in evs %}
+                    <tr>
+                        <td>{{ ev.name }}</td>
+                        <td>{{ ev.manufacturer }}</td>
+                        <td>{{ ev.year }}</td>
+                        <td>{{ ev.battery_size }}</td>
+                        <td>{{ ev.wltp_range }}</td>
+                        <td>{{ ev.cost }}</td>
+                        <td>{{ ev.power_kw }}</td>
+                        <td>
+                            <button onclick="deleteEv('{{ ev.id }}')" class="btn btn-primary">Delete</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+    </div>
+</body>
+</html>
