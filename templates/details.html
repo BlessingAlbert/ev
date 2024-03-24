@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>EV Database | Details</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    </head>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            padding-top: 50px;
+        }
+        .details-box {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .details-title {
+            border-bottom: 2px solid #343a40;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .reviews-box {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        #reviewsList {
+            list-style-type: none;
+            padding: 0;
+        }
+        #reviewsList li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .no-reviews {
+            font-style: italic;
+            color: #6c757d;
+        }
+    </style>
+    <body>
+        <div class="container">
+            <h3 class="text-center" style="border-bottom:1px solid black;">EV Details</h3><br/>
+            {% if ev_data %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <form action="/ev/{{ ev_data.name }}/edit" method="post">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input class="form-control" type="text" id="name" name="name" value="{{ ev_data.name }}">
+                            </div><br/>
+                            <div class="form-group">
+                                <label>Manufacturer</label>
+                                <input class="form-control" type="text" id="manufacturer" name="manufacturer" value="{{ ev_data.manufacturer }}">
+                            </div><br/>
+                            <div class="form-group">
+                                <label>Year</label>
+                                <input class="form-control" type="number" id="year" name="year" value="{{ ev_data.year }}">
+                            </div><br/>
+                            <div class="form-group">
+                                <label>Battery Size (Kwh)</label>
+                                <input class="form-control" type="number" id="battery_size" name="battery_size" value="{{ ev_data.battery_size }}">
+                            </div><br/>
+                            <div class="form-group">
+                                <label>WLTP Range (Km)</label>
+                                <input class="form-control" type="number" id="wltp_range" name="wltp_range" value="{{ ev_data.wltp_range }}">
+                            </div><br/>
+                            <div class="form-group">
+                                <label>Cost</label>
+                                <input class="form-control" type="number" id="cost" name="cost" value="{{ ev_data.cost }}">
+                            </div><br/>
+                            <div class="form-group">
+                                <label>Power (Kw)</label>
+                                <input class="form-control" type="number" id="power_kw" name="power_kw"  value="{{ ev_data.power_kw }}">
+                            </div><br/>
+                            <input type="submit" value="Update" class="btn btn-primary" style="margin:auto;display:block;">
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <form action="/insert-meta/{{ ev_data.name }}" method="post">
+                            <label for="review">Review:</label><br>
+                            <textarea class="form-control" id="review" name="review" rows="4" cols="50"></textarea><br><br>
+                    
+                            <label for="rating">Rating (1-10):</label><br>
+                            <input class="form-control" type="number" id="rating" name="rating" min="1" max="10"><br><br>
+                    
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div><br/>
+                <h3 class="text-center">Reviews</h3>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="reviews-box">
+                            <ul id="reviewsList"></ul>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    async function getEVMeta(ev_name) {
+                        const response = await fetch(`/get-meta/${ev_name}`);
+                        const data = await response.json();
+                        return data;
+                    }
+                    async function displayReviews(ev_name) {
+                        const evMeta = await getEVMeta(ev_name);
+                        const reviewsList = document.getElementById('reviewsList');
+                        reviewsList.innerHTML = '';
+                        if (evMeta.length > 0) {
+                            evMeta.forEach(review => {
+                                const li = document.createElement('li');
+                                li.textContent = `${review.review} - Rating: ${review.rating}`;
+                                reviewsList.appendChild(li);
+                            });
+                        } else {
+                            const li = document.createElement('li');
+                            li.textContent = 'No reviews available.';
+                            reviewsList.appendChild(li);
+                        }
+                    }
+                    window.addEventListener('load', () => {
+                        const evName = '{{ ev_data.name }}'; 
+                        displayReviews(evName);
+                    });
+                </script>
+            {% else %}
+            <p>No EV data found.</p>
+            {% endif %}
+        </div>
+    </body>
+</html>
